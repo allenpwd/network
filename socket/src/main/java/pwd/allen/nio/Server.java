@@ -1,6 +1,7 @@
 package pwd.allen.nio;
 
 import java.io.IOException;
+import java.net.Inet4Address;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.*;
@@ -8,10 +9,14 @@ import java.nio.charset.Charset;
 import java.util.Iterator;
 
 /**
- *  问题：客户端关闭会抛异常死循环
- *  处理：channel.read返回的如果不大于0则关闭key
+ * 演示NIO通信
  *
- *  一般不会去注册SelectionKey.OP_WRITE，因为它表示底层缓冲区是否有空间，一般缓冲区都是空闲的，所以这个事件会一直接收到
+ * 特点：用一个线程就能监控通信
+ *
+ * 问题：客户端关闭会抛异常死循环
+ * 处理：channel.read返回的如果不大于0则关闭key
+ *
+ * 一般不会去注册SelectionKey.OP_WRITE，因为它表示底层缓冲区是否有空间，一般缓冲区都是空闲的，所以这个事件会一直接收到
  *
  * @author 门那粒沙
  * @create 2019-10-20 23:33
@@ -20,6 +25,9 @@ public class Server {
 
     //通道管理器
     private Selector selector;
+
+    //编码解码的字符集
+    private Charset charset = Charset.forName("UTF-8");
 
     /**
      * 获得一个ServerSocket通道，并对该通道做一些初始化的工作
@@ -52,8 +60,11 @@ public class Server {
             //当注册的事件到达时，方法返回；否则,该方法会一直阻塞
             selector.select();
 
+
             //当注册的事件到达时，方法返回；超过1秒也会返回，返回0
 //            selector.select(1000);
+            //唤醒select，使当前阻塞的线程立刻获取返回值
+//            selector.wakeup();
 
             // 获得selector中选中的项的迭代器，选中的项为注册的事件
             Iterator ite = this.selector.selectedKeys().iterator();
@@ -88,6 +99,7 @@ public class Server {
         ServerSocketChannel server = (ServerSocketChannel) key.channel();
         // 获得和客户端连接的通道
         SocketChannel channel = server.accept();
+
         // 设置成非阻塞
         channel.configureBlocking(false);
 
@@ -108,24 +120,45 @@ public class Server {
         // 服务器可读取消息:得到事件发生的Socket通道
         SocketChannel channel = (SocketChannel) key.channel();
         // 创建读取的缓冲区
-        ByteBuffer buffer = ByteBuffer.allocate(1024);
-        int read = channel.read(buffer);
+        ByteBuffer buffer = ByteBuffer.allocate(10);
 
+        StringBuilder sb = new StringBuilder();
+
+        int read = channel.read(buffer);
         //如果客户端关闭，会一直有读事件，但read=0，所以要做判断
-        if (read > 0) {
-            byte[] data = buffer.array();
-            String msg = new String(data).trim();
-            System.out.println("服务端收到信息："+msg);
-            ByteBuffer outBuffer = ByteBuffer.wrap(msg.getBytes());
-            channel.write(outBuffer);// 将消息回送给客户端
-        } else {
+        if (read <= 0) {
             System.out.println("客户端关闭");
             key.cancel();
+            if (key.channel() != null) key.channel().close();
+            return;
         }
+
+        do {
+            buffer.flip();
+            sb.append(charset.decode(buffer));
+            buffer.clear();
+        } while (channel.read(buffer) > 0);
+        System.out.println("服务端收到信息：" + sb.toString());
+
+        if ("write".equals(sb.toString())) {
+            String msg = String.format("你连接的是：%s", Inet4Address.getLocalHost().getHostAddress());
+//            channel.write(charset.encode(msg));
+            ByteBuffer outBuffer = ByteBuffer.wrap(msg.getBytes("GBK"));
+            channel.write(outBuffer);
+        }
+
     }
 
     /**
      * 启动服务端测试
+     *
+     * 用cmd测试
+     * telnet localhost 8000        //连接到8000端口
+     * ctrl + ]                     //进入telnet命令界面
+     * >sen hello world             //输出"hello world"
+     * >c                           //关闭连接
+     * >q                           //退出
+     *
      * @throws IOException
      */
     public static void main(String[] args) throws IOException {

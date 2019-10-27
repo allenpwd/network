@@ -14,7 +14,7 @@ import java.util.concurrent.Executors;
 /**
  * 演示ServerSocket建立连接
  *
- * 特点：阻塞，不适合长连接，因为一个连接占用一个县城
+ * 特点：阻塞，不适合长连接，因为一个连接占用一个线程
  *
  * @author 门那粒沙
  * @create 2019-10-20 21:35
