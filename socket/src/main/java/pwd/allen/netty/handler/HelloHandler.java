@@ -1,7 +1,6 @@
 package pwd.allen.netty.handler;
 
 import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.*;
 
 /**
@@ -35,7 +34,9 @@ public class HelloHandler extends SimpleChannelHandler {
         //管道加上StringEncoder后能直接写string类型，会报错unsupported message type: class java.lang.String
 //        ChannelBuffer copiedBuffer = ChannelBuffers.copiedBuffer("hi".getBytes());
 //        ctx.getChannel().write(copiedBuffer);
-        ctx.getChannel().write("hi");
+        if ("write".equals(msg)) {
+            ctx.getChannel().write("hello!你好！");
+        }
 
         super.messageReceived(ctx, e);
     }
@@ -57,6 +58,8 @@ public class HelloHandler extends SimpleChannelHandler {
     /**
      * 有新连接
      *
+     * 用途：一般用来检测IP是否为黑名单
+     *
      * @param ctx
      * @param e
      * @throws Exception
@@ -70,6 +73,9 @@ public class HelloHandler extends SimpleChannelHandler {
 
     /**
      * 关闭连接，必须是连接已经建立，关闭通道时才会触发
+     *
+     * 用途：可以在用户断线的时候清除缓存数据
+     *
      * @param ctx
      * @param e
      * @throws Exception

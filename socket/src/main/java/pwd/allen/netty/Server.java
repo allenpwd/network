@@ -10,6 +10,7 @@ import org.jboss.netty.handler.codec.string.StringEncoder;
 import pwd.allen.netty.handler.HelloHandler;
 
 import java.net.InetSocketAddress;
+import java.nio.charset.Charset;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -18,6 +19,8 @@ import java.util.concurrent.Executors;
  * @create 2019-10-27 18:18
  **/
 public class Server {
+
+    public static Charset charset = Charset.forName("GBK");
 
     public static void main(String[] args) {
 
@@ -37,8 +40,8 @@ public class Server {
                 ChannelPipeline pipeline = Channels.pipeline();
 
                 //加上这个后
-                pipeline.addLast("decoder", new StringDecoder());
-                pipeline.addLast("encoder", new StringEncoder());
+                pipeline.addLast("decoder", new StringDecoder(charset));
+                pipeline.addLast("encoder", new StringEncoder(charset));
                 pipeline.addLast("hello", new HelloHandler());
                 return pipeline;
             }
@@ -47,7 +50,7 @@ public class Server {
         //绑定端口
         serverBootstrap.bind(new InetSocketAddress(10100));
 
-        System.out.println("start!!!");
+        System.out.println("服务端开启!!!");
 
     }
 }

@@ -73,6 +73,7 @@ public class Server {
                 // 删除已选的key,以防重复处理
                 ite.remove();
 
+                //这里不能异步处理，否则可能selector.select()时请求还没处理，然后又返回一次handlerAccept，而server.accept只能接收成功一次，第二次返回null
                 handler(key);
             }
         }
