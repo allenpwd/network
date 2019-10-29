@@ -9,6 +9,17 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>socket</artifactId>
+    <artifactId>netty</artifactId>
+
+    <dependencies>
+
+        <!--引入netty-->
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty</artifactId>
+            <version>3.10.5.Final</version>
+        </dependency>
+
+    </dependencies>
 
 </project>

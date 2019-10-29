@@ -1,13 +1,11 @@
 package pwd.allen.netty;
 
+import pwd.allen.netty.handler.HelloHandler;
 import org.jboss.netty.bootstrap.ClientBootstrap;
-import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.*;
 import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
-import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 import org.jboss.netty.handler.codec.string.StringDecoder;
 import org.jboss.netty.handler.codec.string.StringEncoder;
-import pwd.allen.netty.handler.HelloHandler;
 
 import java.net.InetSocketAddress;
 import java.util.Scanner;
