@@ -1,4 +1,4 @@
-package pwd.allen.netty.handler;
+package pwd.allen.handler;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.*;

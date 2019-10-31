@@ -74,6 +74,7 @@ public class Server {
 //                    break;
 //                }
 //            }
+            System.out.println(String.format("isInputShutdown：%s", socket.isInputShutdown()));
         } catch (IOException e) {
             e.printStackTrace();
         } finally {

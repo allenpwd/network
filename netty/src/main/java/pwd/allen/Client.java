@@ -1,6 +1,6 @@
-package pwd.allen.netty;
+package pwd.allen;
 
-import pwd.allen.netty.handler.HelloHandler;
+import pwd.allen.handler.HelloHandler;
 import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.channel.*;
 import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
