@@ -26,7 +26,7 @@ public class RMITest {
     }
 
     /**
-     * 调用RMI服务端的myMath服务
+     * 调用RMI服务端的myMath服务abc
      */
     @Test
     public void startClient() {
